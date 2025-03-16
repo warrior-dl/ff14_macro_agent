@@ -28,29 +28,47 @@ graph TD
 
 ## 项目结构
 ```
-app/
-├── main.py
-├── routers/
-│   ├── macro.py    # 宏生成路由
-│   ├── validate.py # 校验路由
-│   └── chat.py     # 对话路由
-├── services/
-│   ├── llm.py      # LLM交互服务
-│   └── mcp_tools.py    # MCP工具交互封装
-├── db/
-│   ├── models.py   # 数据库模型
-│   └── crud.py     # 数据库操作
-└── config.py       # 配置管理
+.
+├── app/                 # 后端服务
+│   ├── main.py         # FastAPI入口文件
+│   ├── config.py       # 配置管理
+│   ├── routers/        # API路由模块
+│   │   ├── macro.py    # 宏生成路由
+│   │   ├── validate.py # 校验路由
+│   │   └── chat.py     # 对话路由
+│   ├── services/       # 业务逻辑服务
+│   │   ├── llm.py      # LLM交互服务
+│   │   └── mcp_tools.py # MCP工具封装
+│   └── requirements.txt # Python依赖
+├── frontend/           # 前端应用
+│   ├── public/         # 静态资源
+│   │   └── index.html  # 主页面
+│   ├── src/            # 源码目录
+│   │   ├── components/ # React组件
+│   │   │   └── MacroGenerator.jsx # 宏生成器组件
+│   │   ├── api/        # API接口模块
+│   │   │   └── macroApi.js # 宏生成API
+│   │   ├── App.css     # 主样式
+│   │   ├── App.jsx     # 主组件
+│   │   └── index.js    # 入口文件
+│   ├── package.json    # 前端依赖配置
+│   └── package-lock.json
+├── .env                # 环境变量配置
+└── README.md           # 项目文档
 ```
 
 ## 系统需求
-1. 网页部署：使用React构建前端界面
-2. 核心服务：FastAPI实现RESTful API
-3. MCP服务：基于MCP服务器实现LLM工具调用
-4. 数据库：PostgreSQL 15+
-5. 依赖服务：
+1. 前端环境：
+   - Node.js 16+
+   - React 18+
+   - npm 9+
+2. 后端环境：
+   - Python 3.10+
+   - FastAPI 0.95+
+   - PostgreSQL 15+
+3. AI服务：
    - OpenAI API访问权限
-   - MCP核心服务（包含工具管理、知识库、校验服务）
+   - MCP核心服务（包含工具管理、规则知识库、校验服务接口）
 
 ## 开发与部署
 
