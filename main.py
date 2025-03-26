@@ -7,6 +7,7 @@ load_dotenv()
 
 import logging
 import os
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
@@ -14,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routers import api_router
+from app.api.routers import api_router, chat, chat_config
 from app.middlewares.frontend import FrontendProxyMiddleware
 from app.observability import init_observability
 from app.settings import init_settings
@@ -24,6 +25,9 @@ app_name = os.getenv("FLY_APP_NAME")
 if app_name:
     servers = [{"url": f"https://{app_name}.fly.dev"}]
 app = FastAPI(servers=servers)
+
+# 设置日志级别为 DEBUG
+logging.basicConfig(level=logging.DEBUG)
 
 init_settings()
 init_observability()

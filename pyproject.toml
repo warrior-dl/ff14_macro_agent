@@ -23,6 +23,7 @@ llama-index = "^0.12.1"
 rich = "^13.9.4"
 llama-index-llms-openai-like = "^0.3.4"
 llama-index-embeddings-dashscope = "^0.3.0"
+llama-index-tools-mcp = "^0.1.0"  # 添加MCP工具依赖
 
 [tool.poetry.dependencies.uvicorn]
 extras = [ "standard" ]

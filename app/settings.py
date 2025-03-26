@@ -292,6 +292,9 @@ def init_openai_like():
         model=os.getenv("MODEL"),
         temperature=float(temperature),
         max_tokens=int(max_tokens) if max_tokens is not None else None,
+        is_chat_model=True,
+        is_function_calling_model=False,
+        context_window=4096,
     )
     # 使用dashscope作为默认的嵌入模型
     init_dashscope_embedding()
