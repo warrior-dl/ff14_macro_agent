@@ -34,8 +34,9 @@ def init_settings():
             init_huggingface()
         case "t-systems":
             from .llmhub import init_llmhub
-
             init_llmhub()
+        case "deepseek" | "openai-like":
+            init_openai_like()
         case _:
             raise ValueError(f"Invalid model provider: {model_provider}")
 
@@ -164,7 +165,7 @@ def init_huggingface_embedding():
             "Hugging Face support is not installed. Please install it with `poetry add llama-index-embeddings-huggingface`"
         )
 
-    embedding_model = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+    embedding_model = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
     backend = os.getenv("EMBEDDING_BACKEND", "onnx")  # "torch", "onnx", or "openvino"
     trust_remote_code = (
         os.getenv("EMBEDDING_TRUST_REMOTE_CODE", "false").lower() == "true"
@@ -248,3 +249,49 @@ def init_mistral():
 
     Settings.llm = MistralAI(model=os.getenv("MODEL"))
     Settings.embed_model = MistralAIEmbedding(model_name=os.getenv("EMBEDDING_MODEL"))
+
+
+def init_dashscope_embedding():
+    try:
+        from llama_index.embeddings.dashscope import (
+            DashScopeEmbedding,
+            DashScopeTextEmbeddingModels,
+            DashScopeTextEmbeddingType,
+        )
+    except ImportError:
+        raise ImportError(
+            "DashScope support is not installed. Please install it with `poetry add llama-index-embeddings-dashscope`"
+        )
+
+    api_key = os.getenv("DASHSCOPE_API_KEY")
+    if not api_key:
+        raise ValueError("DASHSCOPE_API_KEY environment variable is not set")
+
+    Settings.embed_model = DashScopeEmbedding(
+        api_key=api_key,
+        model_name=DashScopeTextEmbeddingModels.TEXT_EMBEDDING_V2,
+        text_type=DashScopeTextEmbeddingType.TEXT_TYPE_DOCUMENT,
+    )
+
+
+def init_openai_like():
+    try:
+        from llama_index.llms.openai_like import OpenAILike
+        from llama_index.core.constants import DEFAULT_TEMPERATURE
+    except ImportError:
+        raise ImportError(
+            "OpenAI-like support is not installed. Please install it with `poetry add llama-index-llms-openai`"
+        )
+
+    max_tokens = os.getenv("LLM_MAX_TOKENS")
+    temperature = os.getenv("LLM_TEMPERATURE", DEFAULT_TEMPERATURE)
+
+    Settings.llm = OpenAILike(
+        api_base=os.getenv("OPENAI_LIKE_API_BASE"),
+        api_key=os.getenv("OPENAI_LIKE_API_KEY"),
+        model=os.getenv("MODEL"),
+        temperature=float(temperature),
+        max_tokens=int(max_tokens) if max_tokens is not None else None,
+    )
+    # 使用dashscope作为默认的嵌入模型
+    init_dashscope_embedding()
