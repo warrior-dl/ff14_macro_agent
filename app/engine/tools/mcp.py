@@ -1,56 +1,34 @@
-"""MCP Tool integration for LlamaIndex."""
-from typing import List, Optional, Dict, Any
-import requests
-from llama_index.core.tools import FunctionTool
-from llama_index.core.tools.tool_spec.base import BaseToolSpec
+from llama_index.core.tools.function_tool import FunctionTool
+from llama_index.tools.mcp import BasicMCPClient, McpToolSpec
+from typing import List, Optional
 
-
-class BasicMCPClient:
-    """Basic client for MCP Server communication."""
+def mcp_get_tools(
+    server_url: str,
+    allowed_tools: Optional[List[str]] = None,
+    **kwargs
+):
+    """
+    Get tools from MCP server.
     
-    def __init__(self, server_url: str):
-        self.server_url = server_url
-        
-    def call_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Any:
-        """Call a tool on the MCP server."""
-        response = requests.post(
-            f"{self.server_url}/tools/{tool_name}",
-            json={"arguments": arguments},
-            timeout=30
+    Args:
+        server_url (str): MCP server URL from tools.yaml config.
+        allowed_tools (Optional[List[str]]): List of allowed tool names to filter.
+    """
+    if not server_url:
+        raise ValueError("MCP server URL must be configured in tools.yaml")
+    
+    client = BasicMCPClient(server_url)
+    return McpToolSpec(client=client, allowed_tools=allowed_tools).to_tool_list()
+
+def get_tools(**kwargs):
+    """
+    Get MCP tools.
+    """
+    return [
+        FunctionTool.from_defaults(
+            fn=mcp_get_tools,
+            name="mcp_get_tools",
+            description="Get tools from MCP server",
+            **kwargs
         )
-        response.raise_for_status()
-        return response.json()
-
-
-class McpToolSpec(BaseToolSpec):
-    """ToolSpec for MCP Server tools."""
-    
-    def __init__(
-        self, 
-        client: BasicMCPClient,
-        allowed_tools: Optional[List[str]] = None
-    ):
-        self.client = client
-        self.allowed_tools = allowed_tools
-        
-    async def to_tool_list_async(self) -> List[FunctionTool]:
-        """Get tools from MCP server."""
-        # TODO: Implement dynamic tool discovery from MCP server
-        tools = []
-        if not self.allowed_tools or "fetch_ipinfo" in self.allowed_tools:
-            tools.append(FunctionTool.from_defaults(
-                self.fetch_ipinfo,
-                name="fetch_ipinfo",
-                description="Get IP information from MCP server"
-            ))
-        return tools
-        
-    def fetch_ipinfo(self, ip: Optional[str] = None) -> Dict[str, Any]:
-        """Fetch IP information from MCP server."""
-        return self.client.call_tool("fetch_ipinfo", {"ip": ip})
-
-
-def get_tools(**kwargs) -> List[FunctionTool]:
-    """Get MCP tools for integration."""
-    client = BasicMCPClient("http://127.0.0.1:8000")
-    return McpToolSpec(client).to_tool_list()
+    ]

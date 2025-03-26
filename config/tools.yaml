@@ -1,3 +1,4 @@
-local: {}
-llamahub:
-  mcp: {}
+local:
+  mcp:
+    server_url: "http://127.0.0.1:8000"
+llamahub: {}
