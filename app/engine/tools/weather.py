@@ -20,16 +20,21 @@ class OpenMeteoWeather:
         response = requests.get(f"{cls.geo_api}/search", params=params)
         if response.status_code != 200:
             raise Exception(f"Failed to fetch geo location: {response.status_code}")
-        else:
-            data = response.json()
-            result = data["results"][0]
-            geo_location = {
-                "id": result["id"],
-                "name": result["name"],
-                "latitude": result["latitude"],
-                "longitude": result["longitude"],
-            }
-            return geo_location
+        
+        data = response.json()
+        logger.debug(f"Geocoding API response: {data}")
+        
+        if not data.get("results") or len(data["results"]) == 0:
+            raise Exception(f"No results found for location: {location}")
+            
+        result = data["results"][0]
+        geo_location = {
+            "id": result["id"],
+            "name": result["name"],
+            "latitude": result["latitude"],
+            "longitude": result["longitude"],
+        }
+        return geo_location
 
     @classmethod
     def get_weather_information(cls, location: str) -> dict:

@@ -5,7 +5,7 @@ FROM node:20 AS frontend
 
 WORKDIR /app/frontend
 
-COPY .frontend /app/frontend
+COPY frontend /app/frontend
 
 RUN npm install && npm run build
 
@@ -43,7 +43,7 @@ COPY --from=frontend /app/frontend/out /app/static
 COPY . .
 
 # Remove frontend code
-RUN rm -rf .frontend
+RUN rm -rf frontend
 
 EXPOSE 8000
 

@@ -1,4 +1,7 @@
-local:
-  mcp:
-    server_url: "http://127.0.0.1:8000"
+mcp:  # 使用mcp类型
+  # firecrawl:
+  #   server_url: "https://router.mcp.so/sse/0wojsem8k5ag27"
+  time:
+    server_url: "https://router.mcp.so/sse/fj5yztm8qxrag8"
 llamahub: {}
+local: {}

@@ -1,4 +1,5 @@
 import os
+import logging
 from typing import List
 
 from llama_index.core.agent import AgentRunner
@@ -10,8 +11,9 @@ from app.engine.index import IndexConfig, get_index
 from app.engine.tools import ToolFactory
 from app.engine.tools.query_engine import get_query_engine_tool
 
+logger = logging.getLogger(__name__)
 
-def get_chat_engine(params=None, event_handlers=None, **kwargs):
+async def get_chat_engine(params=None, event_handlers=None, **kwargs):
     system_prompt = os.getenv("SYSTEM_PROMPT")
     tools: List[BaseTool] = []
     callback_manager = CallbackManager(handlers=event_handlers or [])
@@ -24,9 +26,9 @@ def get_chat_engine(params=None, event_handlers=None, **kwargs):
         tools.append(query_engine_tool)
 
     # Add additional tools
-    configured_tools: List[BaseTool] = ToolFactory.from_env()
+    configured_tools: List[BaseTool] = await ToolFactory.from_env()
     tools.extend(configured_tools)
-
+    logger.info(f"system_prompt: {system_prompt}")
     return AgentRunner.from_llm(
         llm=Settings.llm,
         tools=tools,

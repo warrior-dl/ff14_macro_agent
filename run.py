@@ -13,7 +13,7 @@ import rich
 dotenv.load_dotenv()
 
 
-FRONTEND_DIR = Path(os.getenv("FRONTEND_DIR", ".frontend"))
+FRONTEND_DIR = Path(os.getenv("FRONTEND_DIR", "frontend"))
 APP_HOST = os.getenv("APP_HOST", "localhost")
 APP_PORT = int(
     os.getenv("APP_PORT", 8000)
@@ -234,7 +234,7 @@ def _install_frontend_dependencies():
     rich.print(
         f"\n[bold]Installing frontend dependencies using {package_manager.name}. It might take a while...[/bold]"
     )
-    run([package_manager, "install"], cwd=".frontend", check=True)
+    run([package_manager, "install"], cwd="frontend", check=True)
 
 
 def _get_node_package_manager() -> NodePackageManager:
